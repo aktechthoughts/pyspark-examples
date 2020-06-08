@@ -1,0 +1,20 @@
+
+version: '3'
+services:
+  pyspark_app:
+    image: aktechthoughts/pyspark_app
+    build:
+     context: .
+     dockerfile: app.Dockerfile
+    depends_on:
+     - jupyter_web
+    volumes:
+    - /home/abhishek/PycharmProjects/pyspark-examples/app:/app
+    - /home/abhishek/PycharmProjects/pyspark-examples/config:/usr/spark-2.3.4/conf
+    environment:
+     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+  jupyter_web:
+    image: aktechthoughts/jupyter_web
+    build: .    
+    restart: always
