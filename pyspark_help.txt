@@ -1,0 +1,14 @@
+1.)	Create spark object using SparkSession class.
+2.)	Using spark object read json file using spark.read.json.
+	It will create a spark dataframe(df).
+3.)	Create a global temporary SQL view using df.createOrReplaceTempView. This is available cross-session.
+4.)	SQL queries can be run on the SQL view.
+5.)	sparkcontext(sc) can be created from spark object.
+6.)     sc can be used to read textFile.
+	   Use map to create RDD.
+7.)	Then use createOrReplaceTempViev to create global temporary table.
+Keywords
+---------
+	SparkSession, Row, SparkContext
+
+	
