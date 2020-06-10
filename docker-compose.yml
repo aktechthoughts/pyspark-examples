@@ -1,11 +1,11 @@
-version: "3"
+version: '3'
 services:
   alpine-spark:
     image: aktechthoughts/alpine-spark:1
     build: .
     volumes:
     - ./app:/app
-    - ./conf:/usr/spark-2.4.6/conf
+    - ./conf:/usr/spark-3.0.0-preview2/conf
 
   master:
     image: aktechthoughts/pyspark_master
@@ -15,11 +15,13 @@ services:
     depends_on:
      - alpine-spark
     command:
-      ["/usr/spark-2.4.6/bin/spark-class", "org.apache.spark.deploy.master.Master"]
+      ["/usr/spark-3.0.0-preview2/bin/spark-class", "org.apache.spark.deploy.master.Master"]
     hostname: master
     environment:
       MASTER: spark://master:7077
-      SPARK_CONF_DIR: /usr/spark-2.4.6/conf
+      SPARK_CONF_DIR: /usr/spark-3.0.0-preview2/conf
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     expose:
       - 7001
       - 7002
@@ -35,7 +37,7 @@ services:
       - 7077:7077
       - 8080:8080
     volumes:
-      - ./conf/master:/usr/spark-2.4.6/conf
+      - ./conf/master:/usr/spark-3.0.0-preview2/conf
       - ./app:/app
 
   worker:
@@ -45,7 +47,7 @@ services:
      dockerfile: spark.Dockerfile
     command:
       [
-        "/usr/spark-2.4.6/bin/spark-class",
+        "/usr/spark-3.0.0-preview2/bin/spark-class",
         "org.apache.spark.deploy.worker.Worker",
         "spark://master:7077",
       ]
@@ -69,7 +71,7 @@ services:
     ports:
       - 8081:8081
     volumes:
-      - ./conf/worker:/usr/spark-2.4.6/conf
+      - ./conf/worker:/usr/spark-3.0.0-preview2/conf
       - ./app:/app
 
 #  jupyter:
