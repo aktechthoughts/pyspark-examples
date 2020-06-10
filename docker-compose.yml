@@ -1,18 +1,17 @@
 version: "3"
 services:
   alpine-spark:
-    image: aktechthoughts/alpine-spark:latest
+    image: aktechthoughts/alpine-spark:1
     build: .
     volumes:
-    - /home/abhishek/PycharmProjects/pyspark-examples/app:/app
-    - /home/abhishek/PycharmProjects/pyspark-examples/conf:/usr/spark-2.4.6/conf
-    environment:
-     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    - ./app:/app
+    - ./conf:/usr/spark-2.4.6/conf
+
   master:
+    image: aktechthoughts/pyspark_master
     build:
      context: .
-     dockerfile: app.Dockerfile
+     dockerfile: spark.Dockerfile
     depends_on:
      - alpine-spark
     command:
@@ -37,12 +36,13 @@ services:
       - 8080:8080
     volumes:
       - ./conf/master:/usr/spark-2.4.6/conf
-      - ./app/data:/app/data
+      - ./app:/app
 
   worker:
+    image: aktechthoughts/pyspark_worker
     build:
      context: .
-     dockerfile: app.Dockerfile
+     dockerfile: spark.Dockerfile
     command:
       [
         "/usr/spark-2.4.6/bin/spark-class",
@@ -70,16 +70,10 @@ services:
       - 8081:8081
     volumes:
       - ./conf/worker:/usr/spark-2.4.6/conf
-      - ./data:/app/data
+      - ./app:/app
 
 #  jupyter:
-#    image: alpine-spark
-#    command: jupyter notebook --ip 0.0.0.0 --allow-root --no-browser
-#    depends_on:
-#      - worker
+#  client:
+#    image: eipdev/alpine-jupyter-notebook
 #    ports:
 #      - 8888:8888
-#    volumes:
-#      - ./app/notebooks:/notebooks
-#      - ./app/data:/app/data
-#    working_dir: /notebooks

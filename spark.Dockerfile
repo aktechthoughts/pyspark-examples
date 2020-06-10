@@ -1,4 +1,4 @@
-FROM aktechthoughts/alpine-spark:latest
+FROM aktechthoughts/alpine-spark:1
 
 RUN pip3 install findspark  boto3
 

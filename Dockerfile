@@ -21,7 +21,7 @@ ENV PYTHONPATH=$SPARK_HOME/python/lib/py4j-0.10.7-src.zip:$PYTHONPATH
 # hadoop
 RUN set -ex \
   && apk add --no-cache bash \
-  && apk add --virtual .fetch-deps --no-cache ca-certificates wget curl \
+  && apk add --virtual .fetch-deps --no-cache ca-certificates wget curl nano \
   && curl -sL --retry 3 \
   "http://archive.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz" \
   | gunzip \
