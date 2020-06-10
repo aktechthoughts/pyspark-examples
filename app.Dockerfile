@@ -1,11 +1,9 @@
-FROM aktechthoughts/jupyter_web:latest
+FROM aktechthoughts/alpine-spark:latest
 
-COPY config ${SPARK_HOME}/conf
+RUN pip3 install findspark  boto3
 
-RUN pip install findspark
-
+COPY conf ${SPARK_HOME}/conf
 COPY /app/ /app
-RUN mkdir /app/config
 
 WORKDIR /app
 

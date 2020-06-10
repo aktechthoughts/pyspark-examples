@@ -1,20 +1,85 @@
-
-version: '3'
+version: "3"
 services:
-  pyspark_app:
-    image: aktechthoughts/pyspark_app
+  alpine-spark:
+    image: aktechthoughts/alpine-spark:latest
+    build: .
+    volumes:
+    - /home/abhishek/PycharmProjects/pyspark-examples/app:/app
+    - /home/abhishek/PycharmProjects/pyspark-examples/conf:/usr/spark-2.4.6/conf
+    environment:
+     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+  master:
     build:
      context: .
      dockerfile: app.Dockerfile
     depends_on:
-     - jupyter_web
-    volumes:
-    - /home/abhishek/PycharmProjects/pyspark-examples/app:/app
-    - /home/abhishek/PycharmProjects/pyspark-examples/config:/usr/spark-2.3.4/conf
+     - alpine-spark
+    command:
+      ["/usr/spark-2.4.6/bin/spark-class", "org.apache.spark.deploy.master.Master"]
+    hostname: master
     environment:
-     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-  jupyter_web:
-    image: aktechthoughts/jupyter_web
-    build: .    
-    restart: always
+      MASTER: spark://master:7077
+      SPARK_CONF_DIR: /usr/spark-2.4.6/conf
+    expose:
+      - 7001
+      - 7002
+      - 7003
+      - 7004
+      - 7005
+      - 7006
+      - 7077
+      - 6066
+    ports:
+      - 4040:4040
+      - 6066:6066
+      - 7077:7077
+      - 8080:8080
+    volumes:
+      - ./conf/master:/usr/spark-2.4.6/conf
+      - ./app/data:/app/data
+
+  worker:
+    build:
+     context: .
+     dockerfile: app.Dockerfile
+    command:
+      [
+        "/usr/spark-2.4.6/bin/spark-class",
+        "org.apache.spark.deploy.worker.Worker",
+        "spark://master:7077",
+      ]
+    hostname: worker
+    environment:
+      MASTER: spark://master:7077
+      SPARK_CONF_DIR: /conf
+      SPARK_WORKER_CORES: 2
+      SPARK_WORKER_MEMORY: 1g
+      SPARK_WORKER_PORT: 8881
+      SPARK_WORKER_WEBUI_PORT: 8081
+    depends_on:
+      - master
+    expose:
+      - 7012
+      - 7013
+      - 7014
+      - 7015
+      - 7016
+      - 8881
+    ports:
+      - 8081:8081
+    volumes:
+      - ./conf/worker:/usr/spark-2.4.6/conf
+      - ./data:/app/data
+
+#  jupyter:
+#    image: alpine-spark
+#    command: jupyter notebook --ip 0.0.0.0 --allow-root --no-browser
+#    depends_on:
+#      - worker
+#    ports:
+#      - 8888:8888
+#    volumes:
+#      - ./app/notebooks:/notebooks
+#      - ./app/data:/app/data
+#    working_dir: /notebooks
