@@ -20,6 +20,7 @@ services:
     environment:
       MASTER: spark://master:7077
       SPARK_CONF_DIR: /usr/spark-3.0.0-preview2/conf
+      BUCKET_NAME: ${BUCKET_NAME}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     expose:
