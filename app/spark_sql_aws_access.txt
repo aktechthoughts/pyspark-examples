@@ -1,0 +1,2 @@
+https://www.scaleway.com/en/docs/query-data-on-s3-using-apache-spark-with-hadoop/
+
